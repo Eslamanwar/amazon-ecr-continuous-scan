@@ -222,9 +222,10 @@ Create 2 lambda functions:
 2) to generate the json files based on the scan findings with cloud-watch scheduled trigger
 
 ## how to deploy the first lambda function
+```
 cd lambda-convert-json-2-csv
 ./deploy -s test-convert-json-csv -l ecr-continuous-scan-lambda-bucket -b ecr-continuous-scan-json-csv
-
+```
     Where:
         -s = Stack name - Name of the Cloudformation stack
         -l = Lambda bucket - S3 bucket name where to store the lambda - Will be created if doesn't exist
@@ -299,27 +300,30 @@ cd lambda-generate-ecr-findings
 
 ```
 
-add layer to this function to include new boto3 lib:
-cd layers/
-
-- go to aws console -->lambda -->Layers
-https://console.aws.amazon.com/lambda/home?region=us-east-1#/layers
-
-- create new layes
-and upload the zip file in layers directory
-and submit the create button 
-then copy the Version ARN
-
-and from lambda function -->layers --> Add layer and paste the Version ARN you just copied
+add layer to this function to include new boto3 lib:   
+```
+cd layers/   
+```
 
 
-add cloudwatch event trigger :
-in lambda function Add trigger --> select cloudwatch events-->create new role --> rate(5 minutes)
+- go to aws console -->lambda -->Layers   
+https://console.aws.amazon.com/lambda/home?region=us-east-1#/layers   
+
+- create new layes   
+and upload the zip file in layers directory   
+and submit the create button       
+then copy the Version ARN   
+
+and from lambda function -->layers --> Add layer and paste the Version ARN you just copied   
+  
+
+add cloudwatch event trigger :   
+in lambda function Add trigger --> select cloudwatch events-->create new role --> rate(5 minutes)   
 
 
 
-## Go SDK
-install go SDK and export library
+## Go SDK  
+install go SDK and export library   
 ```
 go get github.com/gorilla/feeds
 go get -u github.com/aws/aws-lambda-go/lambda
