@@ -339,4 +339,13 @@ go get -u  github.com/satori/go.uuid
 ```
 
 	
-
+## scanOnPush configuration
+```
+aws ecr create-repository --repository-name example \
+                            --image-scanning-configuration \
+                            scanOnPush=true
+```
+or after creation:
+```
+aws ecr put-image-scanning-configuration --repository-name amazonlinux --image-scanning-configuration scanOnPush=true --region us-east-1
+```
