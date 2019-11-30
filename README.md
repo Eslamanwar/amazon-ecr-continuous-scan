@@ -288,8 +288,10 @@ and attach policies:
 ```
 
 
-
+```
 cd lambda-generate-ecr-findings
+```
+
 ```
 ./deploy.sh -s test-generate-json-findings -l ecr-ecr-continuous-scan-lambda-bucket2
 
