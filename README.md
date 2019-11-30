@@ -323,8 +323,22 @@ add cloudwatch event trigger :
 in lambda function Add trigger --> select cloudwatch events-->create new role --> rate(5 minutes)   
 
 
+	
+## scanOnPush configuration
+when first create repository:
+```
+aws ecr create-repository --repository-name example \
+                            --image-scanning-configuration \
+                            scanOnPush=true
+```
+or after creation:
+```
+aws ecr put-image-scanning-configuration --repository-name amazonlinux --image-scanning-configuration scanOnPush=true --region us-east-1
+```
 
-## Go SDK  
+
+
+## Go SDK   
 install go SDK and export library   
 ```
 go get github.com/gorilla/feeds
@@ -338,14 +352,3 @@ go get -u github.com/aws/aws-sdk-go/aws
 go get -u  github.com/satori/go.uuid
 ```
 
-	
-## scanOnPush configuration
-```
-aws ecr create-repository --repository-name example \
-                            --image-scanning-configuration \
-                            scanOnPush=true
-```
-or after creation:
-```
-aws ecr put-image-scanning-configuration --repository-name amazonlinux --image-scanning-configuration scanOnPush=true --region us-east-1
-```
