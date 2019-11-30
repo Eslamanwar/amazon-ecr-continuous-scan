@@ -1,8 +1,8 @@
 {
-    "region": "us-west-2",
-    "registry": "148658015984",
+    "region": "us-east-1",
+    "registry": "215745394840",
     "repository": "amazonlinux",
     "tags": [
-        "2018.03"
+        "latest"
     ]
 }

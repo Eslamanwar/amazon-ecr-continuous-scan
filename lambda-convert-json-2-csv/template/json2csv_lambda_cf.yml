@@ -1,0 +1,76 @@
+Description: Convert json to cvs when a file gets uploaded to S3 using lambda 
+Parameters:
+  BucketName:
+    Description: S3 Bucket name
+    Type: String
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    DependsOn: BucketPermission
+    Properties:
+      BucketName: !Ref BucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+        - Event: 's3:ObjectCreated:*'
+          Function: !GetAtt Json2csvLambda.Arn
+          Filter:
+            S3Key:
+              Rules:
+                -
+                  Name: suffix
+                  Value: .json
+        - Event: 's3:ObjectRemoved:*'
+          Function: !GetAtt Json2csvLambda.Arn
+          Filter:
+            S3Key:
+              Rules:
+                -
+                  Name: suffix
+                  Value: .csv
+        - Event: 's3:ReducedRedundancyLostObject'
+          Function: !GetAtt Json2csvLambda.Arn
+          Filter:
+            S3Key:
+              Rules:
+                -
+                  Name: suffix
+                  Value: .csv
+  BucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref Json2csvLambda
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref "AWS::AccountId"
+      SourceArn: !Sub "arn:aws:s3:::${BucketName}"
+  Json2csvLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Converts a json file to csv when invoked
+      Handler: json2csv.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code: ../code/.
+      Timeout: 3
+      Runtime: python3.6
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal: {Service: [lambda.amazonaws.com]}
+          Action: ['sts:AssumeRole']
+      Path: /
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      Policies:
+      - PolicyName: S3Policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - 's3:PutObject'
+                - 's3:GetObject'
+              Resource: !Sub "arn:aws:s3:::${BucketName}/*"
