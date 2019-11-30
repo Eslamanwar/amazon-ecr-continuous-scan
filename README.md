@@ -313,7 +313,8 @@ then copy the Version ARN
 and from lambda function -->layers --> Add layer and paste the Version ARN you just copied
 
 
-
+add cloudwatch event trigger :
+in lambda function Add trigger --> select cloudwatch events-->create new role --> rate(5 minutes)
 
 
 
