@@ -211,3 +211,122 @@ You can remove scan configs like so:
 ```sh
 curl --request DELETE $ECRSCANAPI_URL/configs/4471c156-29f5-40fe-883b-3cd26738d5a6
 ```
+
+
+
+# new requirements
+
+Create 2 lambda functions:
+1) to convert the json file to csv file
+
+2) to generate the json files based on the scan findings with cloud-watch scheduled trigger
+
+## how to deploy the first lambda function
+cd lambda-convert-json-2-csv
+./deploy -s test-convert-json-csv -l ecr-continuous-scan-lambda-bucket -b ecr-continuous-scan-json-csv
+
+    Where:
+        -s = Stack name - Name of the Cloudformation stack
+        -l = Lambda bucket - S3 bucket name where to store the lambda - Will be created if doesn't exist
+        -b = Bucket - S3 bucket where to store csv and json files - Will be created in the stack.
+
+
+
+
+## how to deploy the second lambda function
+
+create myrole in IAM Roles:
+
+{
+    "Role": {
+        "Arn": "arn:aws:iam::xxxaccount-idxxx:role/service-role/myrole",
+        "CreateDate": "2019-11-29T21:59:09Z",
+        "RoleName": "myrole",
+        "MaxSessionDuration": 3600,
+        "Path": "/service-role/",
+        "RoleId": "AROATEO3NPCMBLQULMATK",
+        "AssumeRolePolicyDocument": {
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "sts:AssumeRole",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    }
+                }
+            ],
+            "Version": "2012-10-17"
+        },
+        "RoleLastUsed": {
+            "Region": "us-east-1",
+            "LastUsedDate": "2019-11-30T11:42:00Z"
+        }
+    }
+}
+
+
+and attach policies:
+
+{
+    "AttachedPolicies": [
+        {
+            "PolicyName": "AmazonEC2ContainerRegistryFullAccess",
+            "PolicyArn": "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+        },
+        {
+            "PolicyName": "AmazonS3FullAccess",
+            "PolicyArn": "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        },
+        {
+            "PolicyName": "AWSLambdaBasicExecutionRole-1639adec-cfcc-4db2-8545-2b302a9be0bc",
+            "PolicyArn": "arn:aws:iam::215745394840:policy/service-role/AWSLambdaBasicExecutionRole-1639adec-cfcc-4db2-8545-2b302a9be0bc"
+        }
+    ]
+}
+
+
+
+
+
+cd lambda-generate-ecr-findings
+./deploy.sh -s test-generate-json-findings -l ecr-ecr-continuous-scan-lambda-bucket2
+
+    Where:
+        -s = Stack name - Name of the Cloudformation stack
+        -l = Lambda bucket - S3 bucket name where to store the lambda - Will be created if doesn't exist
+
+
+add layer to this function to include new boto3 lib:
+cd layers/
+
+- go to aws console -->lambda -->Layers
+https://console.aws.amazon.com/lambda/home?region=us-east-1#/layers
+
+- create new layes
+and upload the zip file in layers directory
+and submit the create button 
+then copy the Version ARN
+
+and from lambda function -->layers --> Add layer and paste the Version ARN you just copied
+
+
+
+
+
+
+## Go SDK
+install go SDK and export library
+    go get github.com/gorilla/feeds
+
+    go get -u github.com/aws/aws-lambda-go/lambda
+
+    go get -u github.com/aws/aws-lambda-go/events
+	go get -u github.com/aws/aws-lambda-go/lambda
+	go get -u github.com/aws/aws-sdk-go-v2/aws/external
+	go get -u github.com/aws/aws-sdk-go-v2/service/s3
+	go get -u github.com/aws/aws-sdk-go-v2/service/s3/s3manager
+	go get -u github.com/aws/aws-sdk-go/aws
+
+
+	go get -u  github.com/satori/go.uuid
+
