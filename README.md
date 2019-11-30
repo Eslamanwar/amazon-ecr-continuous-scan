@@ -236,7 +236,7 @@ cd lambda-convert-json-2-csv
 ## how to deploy the second lambda function
 
 create myrole in IAM Roles:
-
+```
 {
     "Role": {
         "Arn": "arn:aws:iam::xxxaccount-idxxx:role/service-role/myrole",
@@ -284,17 +284,20 @@ and attach policies:
     ]
 }
 
-
+```
 
 
 
 cd lambda-generate-ecr-findings
+```
 ./deploy.sh -s test-generate-json-findings -l ecr-ecr-continuous-scan-lambda-bucket2
+
 
     Where:
         -s = Stack name - Name of the Cloudformation stack
         -l = Lambda bucket - S3 bucket name where to store the lambda - Will be created if doesn't exist
 
+```
 
 add layer to this function to include new boto3 lib:
 cd layers/
@@ -316,17 +319,17 @@ and from lambda function -->layers --> Add layer and paste the Version ARN you j
 
 ## Go SDK
 install go SDK and export library
-    go get github.com/gorilla/feeds
+```
+go get github.com/gorilla/feeds
+go get -u github.com/aws/aws-lambda-go/lambda
+go get -u github.com/aws/aws-lambda-go/events
+go get -u github.com/aws/aws-lambda-go/lambda
+go get -u github.com/aws/aws-sdk-go-v2/aws/external
+go get -u github.com/aws/aws-sdk-go-v2/service/s3
+go get -u github.com/aws/aws-sdk-go-v2/service/s3/s3manager
+go get -u github.com/aws/aws-sdk-go/aws
+go get -u  github.com/satori/go.uuid
+```
 
-    go get -u github.com/aws/aws-lambda-go/lambda
-
-    go get -u github.com/aws/aws-lambda-go/events
-	go get -u github.com/aws/aws-lambda-go/lambda
-	go get -u github.com/aws/aws-sdk-go-v2/aws/external
-	go get -u github.com/aws/aws-sdk-go-v2/service/s3
-	go get -u github.com/aws/aws-sdk-go-v2/service/s3/s3manager
-	go get -u github.com/aws/aws-sdk-go/aws
-
-
-	go get -u  github.com/satori/go.uuid
+	
 
